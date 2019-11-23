@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class NLPProcessor {
 
-    private static Logger logger = Logger.getLogger(CountPreceedingOccurance.class.getName());
+    private static Logger logger = Logger.getLogger(WordFinder.class.getName());
 
     public static void main(String[] args) throws Exception {
         NLPProcessor.generateVerbTriples("textInput.txt", true) ;

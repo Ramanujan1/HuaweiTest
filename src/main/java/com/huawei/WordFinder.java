@@ -10,18 +10,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class CountPreceedingOccurance {
+public class WordFinder {
 
     private static String  searchString=  "";
 
-    public CountPreceedingOccurance(String searchString) {
+    public WordFinder(String searchString) {
         this.searchString = searchString;
     }
 
     private static String REG_EX_PREV_STRING = "[a-zA-Z_0-9]* ";
     private static Logger logger
             = Logger.getLogger(
-            CountPreceedingOccurance.class.getName());
+            WordFinder.class.getName());
 
     public String printPreviousString()  {
         String inputText= "";
