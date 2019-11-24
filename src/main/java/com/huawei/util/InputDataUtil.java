@@ -1,19 +1,11 @@
 package com.huawei.util;
 
-import com.huawei.NLPProcessor;
-
-import java.io.File;
-import java.nio.file.Files;
-
+import org.apache.commons.io.IOUtils;
 public class InputDataUtil {
 
     public static String loadInputFile() throws Exception {
-        ClassLoader classLoader = new NLPProcessor().getClass().getClassLoader();
-
-        File file = new File(classLoader.getResource("textInput.txt").getFile());
-
-        //Read File Content
-        String content = new String(Files.readAllBytes(file.toPath()));
+        String content = IOUtils.toString(InputDataUtil.class.getClassLoader()
+                .getResourceAsStream("textInput.txt"));
 
         return content;
     }

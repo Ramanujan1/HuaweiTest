@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class NLPProcessor {
 
-    private static Logger logger = Logger.getLogger(WordFinder.class.getName());
+    private static Logger logger = Logger.getLogger(RegexWordSearch.class.getName());
 
     public static void main(String[] args) throws Exception {
         NLPProcessor.generateVerbTriples("textInput.txt", true) ;
@@ -29,24 +29,23 @@ public class NLPProcessor {
             logger.info("The file was not loaded successfully");
         }
 
-        // set up pipelineCoreNLP properties
+        // Properties setup list of annotators to run and settings for neural algorithm.
         Properties properties = new Properties();
-        // set the list of annotators to run
         properties.setProperty("annotators", "tokenize,ssplit,pos,lemma");
-        // set a property for an annotator, in this case the coref annotator is being set to use the neural algorithm
         properties.setProperty("coref.algorithm", "neural");
-        // build pipelineCoreNLP
+
+        // build pipelineCoreNLP object
         StanfordCoreNLP pipelineCoreNLP = new StanfordCoreNLP(properties);
-        // create a coreDocument object
+
+        // create and annotate coreDocument object
         CoreDocument coreDocument = new CoreDocument(content);
-        // annotate the coreDocument
         pipelineCoreNLP.annotate(coreDocument);
 
         List<List> allTriples = constructTriples(coreDocument);
 
         //Load Triple to Neo4j
         if(loadTriplesToNeo4j){
-            loadTripleToNeo4j(allTriples);
+            hostTripleOnNeo4j(allTriples);
         }
 
         logger.info("All the triples : " + allTriples);
@@ -85,7 +84,7 @@ public class NLPProcessor {
         return allTriples;
     }
 
-    private static void loadTripleToNeo4j(List<List> allTriples) throws Exception{
+    private static void hostTripleOnNeo4j(List<List> allTriples) throws Exception{
         //Change the details below if you are connecting to a different instance of Neo4J
         try ( Neo4JConnection connection = new Neo4JConnection( "bolt://localhost:7687",
                 "neo4j", "test" ) )

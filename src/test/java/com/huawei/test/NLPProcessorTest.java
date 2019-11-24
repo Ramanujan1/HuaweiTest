@@ -1,3 +1,5 @@
+package com.huawei.test;
+
 import com.huawei.NLPProcessor;
 import org.junit.Before;
 import org.junit.Test;

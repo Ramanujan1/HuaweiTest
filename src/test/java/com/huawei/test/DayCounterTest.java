@@ -1,3 +1,5 @@
+package com.huawei.test;
+
 import com.huawei.DaysCounter;
 import org.junit.Before;
 import org.junit.Test;
