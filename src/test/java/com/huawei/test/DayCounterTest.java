@@ -16,51 +16,61 @@ public class DayCounterTest {
 
     @Test
     public void testCountNumberOfDays_Jan() {
-        assertEquals(1, daysCounter.countNumberOfDaysInaDate(1,1, 2000));
+        assertEquals(1, daysCounter.getDatNum(1,1, 2000));
     }
 
     @Test
     public void testCountNumberOfDays_Feb() {
-        assertEquals(59, daysCounter.countNumberOfDaysInaDate(2,28, 2000));
+        assertEquals(59, daysCounter.getDatNum(28, 2, 2000));
     }
 
     @Test
     public void testCountNumberOfDays_LeapYearDay() {
-        assertEquals(265, daysCounter.countNumberOfDaysInaDate(9,21, 2004));
+        assertEquals(265, daysCounter.getDatNum(21,9, 2004));
     }
 
     @Test
     public void testCountNumberOfDays_NonLeapYearDay() {
-        assertEquals(264, daysCounter.countNumberOfDaysInaDate(9,21, 2003));
+        assertEquals(264, daysCounter.getDatNum(21,9, 2003));
     }
 
     @Test
     public void testCountNumberOfDays_InvalidDay(){
-        assertEquals(-1, daysCounter.countNumberOfDaysInaDate(2,29,2003));
+        assertEquals(-1, daysCounter.getDatNum(29,2,2003));
     }
 
     @Test
     public void testCountNumberOfDays_InvalidYear(){
-        assertEquals(-1, daysCounter.countNumberOfDaysInaDate(2,29,0));
+        assertEquals(-1, daysCounter.getDatNum(29,2,0));
     }
 
     @Test
     public void testCountNumberOfDays_InvalidMonth(){
-        assertEquals(-1, daysCounter.countNumberOfDaysInaDate(14,29,0));
+        assertEquals(-1, daysCounter.getDatNum(29,14,0));
     }
 
     @Test
     public void testCountNumberOfDays_NegativeDay(){
-        assertEquals(-1, daysCounter.countNumberOfDaysInaDate(2,-1,2003));
+        assertEquals(-1, daysCounter.getDatNum(-1,2,2003));
     }
 
     @Test
     public void testCountNumberOfDays_NegativeYear(){
-        assertEquals(-1, daysCounter.countNumberOfDaysInaDate(2,29,-1));
+        assertEquals(-1, daysCounter.getDatNum(29,2,-1));
     }
 
     @Test
     public void testCountNumberOfDays_NegativeMonth(){
-        assertEquals(-1, daysCounter.countNumberOfDaysInaDate(-1,29,2003));
+        assertEquals(-1, daysCounter.getDatNum(29,-1,2003));
+    }
+
+    @Test
+    public void testCountNumberOfDays_31dayMonth(){
+        assertEquals(213, daysCounter.getDatNum(31,7,2004));
+    }
+
+    @Test
+    public void testCountNumberOfDays_WrongLeapYearDate(){
+        assertEquals(-1, daysCounter.getDatNum(29,2,1999));
     }
 }

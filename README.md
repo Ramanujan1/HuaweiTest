@@ -13,7 +13,7 @@ Search String: "to"
 Output:（"process", "in", 2)
 
 2.DayCounter : This class contains the logic to calculate the number of days in the given year for the given date and month. This
-               also has the logic to consider leapyear number of days. The function countNumberOfDaysInaDate(Integer month, Integer date, Integer year)
+               also has the logic to consider leapyear number of days. The function getDatNum(int day, int month, int year)
                is used to perform these calculations.
 
 Problem Statement:
@@ -39,7 +39,7 @@ Problem Statement: Write a program that reads a text in txt and does the followi
   Text1 is the text preceding the verb until the previous verb
   Text2 is the text succeeding the verb until the next verb
   Note, different triples may have overlapping text (end text of one triple is the start text of the next)
-  
+
   Examples:
 
   "all featured content undergoes a thorough review process to ensure that it meets the highest standards in to serve as the best example of our end goals"

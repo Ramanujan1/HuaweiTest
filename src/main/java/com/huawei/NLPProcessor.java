@@ -10,11 +10,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-/** A demo illustrating how to call the OpenIE system programmatically.
- */
 public class NLPProcessor {
 
-    private static Logger logger = Logger.getLogger(RegexWordSearch.class.getName());
+    private static Logger logger = Logger.getLogger(NLPProcessor.class.getName());
 
     public static void main(String[] args) throws Exception {
         NLPProcessor.generateVerbTriples("textInput.txt", true) ;
@@ -29,46 +27,53 @@ public class NLPProcessor {
             logger.info("The file was not loaded successfully");
         }
 
-        // Properties setup list of annotators to run and settings for neural algorithm.
-        Properties properties = new Properties();
-        properties.setProperty("annotators", "tokenize,ssplit,pos,lemma");
-        properties.setProperty("coref.algorithm", "neural");
+        List<List> finalTriplesList = constructTriples(createCoreDocument(constructProperties(), content));
 
-        // build pipelineCoreNLP object
-        StanfordCoreNLP pipelineCoreNLP = new StanfordCoreNLP(properties);
-
-        // create and annotate coreDocument object
-        CoreDocument coreDocument = new CoreDocument(content);
-        pipelineCoreNLP.annotate(coreDocument);
-
-        List<List> allTriples = constructTriples(coreDocument);
+        logger.info("All the triples : " + finalTriplesList);
 
         //Load Triple to Neo4j
         if(loadTriplesToNeo4j){
-            hostTripleOnNeo4j(allTriples);
+            hostTripleOnNeo4j(finalTriplesList);
         }
 
-        logger.info("All the triples : " + allTriples);
-
-        return allTriples;
+        return finalTriplesList;
     }
 
+    private static Properties constructProperties() {
+        // Properties setup list of annotators to run and settings for neural algorithm.
+        Properties propsCoreNLP = new Properties();
+        propsCoreNLP.setProperty("annotators", "tokenize,ssplit,pos,lemma");
+        propsCoreNLP.setProperty("coref.algorithm", "neural");
+
+        return propsCoreNLP;
+    }
+
+    private static CoreDocument createCoreDocument(Properties coreNLProperties, String content) {
+        // build stanfordCoreNLP object
+        StanfordCoreNLP stanfordCoreNLP = new StanfordCoreNLP(coreNLProperties);
+
+        // create and annotate coreDocument object
+        CoreDocument coreDocument = new CoreDocument(content);
+        stanfordCoreNLP.annotate(coreDocument);
+
+        return coreDocument;
+    }
     private static List<List> constructTriples(CoreDocument coreDocument){
         int tripleCounter = 0;
-        List<List> allTriples = new ArrayList<>();
+        List<List> finalTriples = new ArrayList<>();
         StringBuilder tripleElement = new StringBuilder();
 
         for (CoreLabel coreLabel : coreDocument.tokens()) {
             if (coreLabel.tag().startsWith("VB")) {
-                List<String> currentTriple = new ArrayList<>();
+                List<String> newTriple = new ArrayList<>();
                 String tripleElementStr =  tripleElement.toString().trim();
-                currentTriple.add(tripleElementStr);
-                currentTriple.add(coreLabel.originalText());
+                newTriple.add(tripleElementStr);
+                newTriple.add(coreLabel.originalText());
                 if (tripleCounter > 0) {
-                    List<String> previousTriple = allTriples.get(tripleCounter - 1);
+                    List<String> previousTriple = finalTriples.get(tripleCounter - 1);
                     previousTriple.add(tripleElementStr);
                 }
-                allTriples.add(currentTriple);
+                finalTriples.add(newTriple);
                 tripleElement = new StringBuilder();
                 tripleCounter++;
             } else {
@@ -76,23 +81,17 @@ public class NLPProcessor {
             }
         }
 
-        if(!allTriples.isEmpty()) {
+        if(!finalTriples.isEmpty()) {
             //Adding after words to the triple of last verb
-            List<String> previousTriple = allTriples.get(tripleCounter - 1);
+            List<String> previousTriple = finalTriples.get(tripleCounter - 1);
             previousTriple.add(tripleElement.toString().trim());
         }
-        return allTriples;
+        return finalTriples;
     }
 
-    private static void hostTripleOnNeo4j(List<List> allTriples) throws Exception{
-        //Change the details below if you are connecting to a different instance of Neo4J
-        try ( Neo4JConnection connection = new Neo4JConnection( "bolt://localhost:7687",
-                "neo4j", "test" ) )
-        {
-            for(List<String> triple : allTriples) {
-                connection.loadTriple(triple);
-            }
-
-        }
+    private static void hostTripleOnNeo4j(List<List> finalTriples) {
+        // connect to the neo4j database with the correct connection credentials
+        DBConnNeo4j neo4jConnection = new DBConnNeo4j("bolt://localhost:7687", "neo4j", "password");
+        neo4jConnection.insertTripleToDB(finalTriples);
     }
 }
