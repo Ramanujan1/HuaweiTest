@@ -16,7 +16,7 @@ public class NLPProcessorTest {
     @Before
     public void init() throws Exception{
          nlpProcessor = new NLPProcessor();
-         allTriples = NLPProcessor.generateVerbTriples("verbtriples_example.txt", false);
+         allTriples = NLPProcessor.generateVerbTriples("textInput.txt", false);
     }
 
     @Test
